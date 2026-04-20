@@ -1,0 +1,114 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Konnect Kafka Demo
+meta:
+  id: wrk_a39f190278184d59bce4cfebfc0fe401
+  created: 1775889736518
+  modified: 1776677441725
+  description: ""
+collection:
+  - url: localhost:8000/kafka
+    name: Standard Format
+    meta:
+      id: req_713a07d3033944e0a7a87ac80d0d9c55
+      created: 1775889743143
+      modified: 1776658863712
+      isPrivate: false
+      description: ""
+      sortKey: -1775889743143
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+          "id": "{% faker 'randomUUID' %}",
+          "day": "{% faker 'randomWeekday' %}",
+          "ip": "{% faker 'randomIP' %}",
+          "name": "{% faker 'randomFirstName' %} {% faker 'randomLastName' %}",
+          "score": {{ my_score }}
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/12.5.0
+        description: ""
+        disabled: false
+      - name: test
+        value: value
+        description: ""
+        disabled: false
+    scripts:
+      preRequest: |-
+        // 0〜100のランダムな整数を生成
+        const randomNumber = Math.floor(Math.random() * 101);
+
+        // Insomniaの変数「my_number」としてセット
+        insomnia.variables.set("my_score", randomNumber);
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: localhost:8000/kafka-score
+    name: New Different Format
+    meta:
+      id: req_e84f67fd067548259d881f7fa0b8f2a7
+      created: 1775908444147
+      modified: 1776658877819
+      isPrivate: false
+      description: ""
+      sortKey: -1775410914791
+    method: POST
+    body:
+      mimeType: application/json
+      text: >-
+        {
+          "id": "{% faker 'randomUUID' %}",
+          "ip": "{% faker 'randomIP' %}",
+           "test": {
+            "day": "{% faker 'randomWeekday' %}",
+            "name": "{% faker 'randomFirstName' %} {% faker 'randomLastName' %}",
+            "score": {{ my_score }}
+          }
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/12.5.0
+        description: ""
+        disabled: false
+    scripts:
+      preRequest: |-
+        // 0〜100のランダムな整数を生成
+        const randomNumber = Math.floor(Math.random() * 101);
+
+        // Insomniaの変数「my_number」としてセット
+        insomnia.variables.set("my_score", randomNumber);
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_4585cb87a94784578cba08cae52e86697a0c3973
+    created: 1775889736519
+    modified: 1776662367628
+environments:
+  name: Base Environment
+  meta:
+    id: env_4585cb87a94784578cba08cae52e86697a0c3973
+    created: 1775889736519
+    modified: 1776662367628
+    isPrivate: false
+  data:
+    my_score: "0"

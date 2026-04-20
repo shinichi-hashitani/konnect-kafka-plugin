@@ -1,0 +1,32 @@
+_format_version: "3.0"
+_konnect:
+  control_plane_name: default
+services:
+- host: localhost
+  name: kafka
+  port: 9092
+  routes:
+  - name: route-kafka
+    paths:
+    - /kafka
+    plugins:
+    - config:
+        bootstrap_servers:
+        - host: host.docker.internal
+          port: 9094
+        cluster_name: wRWFMG4f9pDV0QYrTQdHiFdpZJzC0Lki
+        forward_body: true
+        forward_headers: true
+        forward_method: false
+        forward_uri: false
+        producer_async: false
+        message_by_lua_functions:
+        - |
+          return function(message)
+            return message.body_args
+          end
+        topic: source
+      enabled: true
+      name: kafka-upstream
+    protocols:
+    - http

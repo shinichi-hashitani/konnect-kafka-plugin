@@ -1,0 +1,54 @@
+_format_version: "3.0"
+_konnect:
+  control_plane_name: default
+services:
+- host: localhost
+  name: kafka
+  port: 9092
+  plugins:
+  - config:
+      access:
+      - |
+        local body = kong.request.get_body()
+        if body and body.day then
+          kong.service.request.set_query({ kafka_key = body.day })
+        elseif body and body.test and body.test.day then
+          kong.service.request.set_query({ kafka_key = body.test.day })
+        end
+    enabled: true
+    name: pre-function
+  - config:
+      bootstrap_servers:
+      - host: host.docker.internal
+        port: 9094
+      cluster_name: wRWFMG4f9pDV0QYrTQdHiFdpZJzC0Lki
+      forward_body: true
+      forward_headers: true
+      forward_method: false
+      forward_uri: false
+      producer_async: false
+      key_query_arg: kafka_key
+      message_by_lua_functions:
+      - |
+        return function(message)
+          return message.body_args
+        end
+      topic: source
+    enabled: true
+    name: kafka-upstream
+  routes:
+  - name: route-kafka
+    paths:
+    - /kafka
+    protocols:
+    - http
+  - name: route-kafka-score
+    paths:
+    - /kafka-score
+    plugins:
+    - config:
+        request_jq_program: '{id: .id, ip: .ip, day: .test.day, name: .test.name, score: .test.score}'
+      enabled: true
+      name: jq
+    protocols:
+    - http
