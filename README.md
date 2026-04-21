@@ -282,5 +282,33 @@ ksql> SELECT * FROM WEEKDAYS_SCORE_STATS;
 Query terminated
 ```
 
-> [!NOTE]
-> この際、```auto.offset.reset```の値を```earliest```に変更してください。これによりこれまで```source```に送ったデータの最初から読み込んで処理されます。
+## ゲートウェイによる複数フォーマット対応。
+Kafkaに関わらずメッセージのフォーマットは重要で、フォーマット変換はメッセージを受け取る側 (Consumer) に対して大きな影響を与える。下記のような場合、別フォーマットでメッセージを送る側が合わせる必要がある。
+
+![Supporting two different formats](/resources/handling-multiple-formats.png)
+
+この対応を反映した定義が[3-support-two-formats.yaml](/3-support-two-formats.yaml)定義してある。この設定を適用する。
+
+```bash
+deck gateway sync 3-support-two-formats.yaml --konnect-token $KONNECT_TOKEN
+```
+
+結果として、異なるフォーマットを送っているが
+![Insomnia - Sending different format](/resources/insomnia-support-new-format.png)
+Kafkaには以前のフォーマットと同じフォーマットでKafkaに届く様になっている。
+![Control Center - Supporting different format](/resources/control-center-new-format-supported.png)
+
+対応内容としては、新たなRouteの指定に合わせて、jqプラグインを利用してペイロードの加工を行っている。
+
+```yaml
+  - name: route-kafka-score
+    paths:
+    - /kafka-score
+    plugins:
+    - config:
+        request_jq_program: '{id: .id, ip: .ip, day: .test.day, name: .test.name, score: .test.score}'
+      enabled: true
+      name: jq
+```
+
+今回のサンプルはRouteに紐付けたが、ConsumerやConsumer + Routeに紐付ける事も可能なので、同一Route (つまり同じPath) に対してのリクエストも切り替える事は可能。
