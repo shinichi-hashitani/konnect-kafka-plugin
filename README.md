@@ -2,6 +2,8 @@
 
 Kafkaは高速かつ大量のイベントを安定的に処理できるデータプラットフォームです。本サンプルでは、Kongに対するREST APIのリクエストをKafkaプロトコルフォーマットに変換する処理を順を追って説明します。
 
+![Supporting two different formats](/resources/handling-multiple-formats.png)
+
 環境としてはKongの管理にKong Konnect、Kafka及びKSQL (ストリーム処理) にConfluent Platformを利用します。
 
 - Konnect: SaaSでありバージョンは単一
@@ -284,8 +286,6 @@ Query terminated
 
 ## ゲートウェイによる複数フォーマット対応。
 Kafkaに関わらずメッセージのフォーマットは重要で、フォーマット変換はメッセージを受け取る側 (Consumer) に対して大きな影響を与える。下記のような場合、別フォーマットでメッセージを送る側が合わせる必要がある。
-
-![Supporting two different formats](/resources/handling-multiple-formats.png)
 
 この対応を反映した定義が[3-support-two-formats.yaml](/3-support-two-formats.yaml)定義してある。この設定を適用する。
 
